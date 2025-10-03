@@ -16,7 +16,7 @@ import Domain
 import Debug.Trace
 
 type RHS m v d = (v -> m d) -> m d
-type Sys v d = Monad m => v -> RHS m v d
+type Sys v d = forall m. Monad m => v -> RHS m v d
 type Sol v d = Map v d
 
 verify :: (Ord v, Domain d) => Sol v d -> Sys v d -> [v] -> Bool

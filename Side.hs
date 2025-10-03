@@ -4,6 +4,8 @@
  - (Kalmer Apinis, Helmut Seidl, and Vesal Vojdani. "Side-Effecting Constraint
  - Systems: A Swiss Army Knife for Program Analysis", APLAS 2012.) -}
 
+module Side where
+
 import Control.Monad
 import Control.Monad.Cont
 import Control.Monad.State
@@ -13,7 +15,7 @@ import Data.Map as M
 import Domain
 
 type RHS m v d = (v -> m d) -> (v -> d -> m ()) -> m d
-type Sys v d = Monad m => v -> RHS m v d
+type Sys v d = forall m. Monad m => v -> RHS m v d
 type Sol v d = Map v d
 
 verify :: (Ord v, Domain d) => Sol v d -> Sys v d -> [v] -> Bool
@@ -40,9 +42,9 @@ solveAll f vs = sigma $ execState (solveAll' vs) initState
   solve x = do 
     s <- gets stable
     when (x ∉ s) $ do
-    updStable (S.insert x)
-    v <- (f x) (eval x) set
-    set x v
+      updStable (S.insert x)
+      v <- (f x) (eval x) set
+      set x v
 
   eval x y = do
     solve y
